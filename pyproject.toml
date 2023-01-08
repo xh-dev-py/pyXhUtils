@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "pyXhUtils"
+version = "0.0.1"
+authors = [
+  { name="xethhung", email="pypi@xethh.dev" },
+]
+description = "A collection of self dev py library"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/xh-dev-py/xhUtils"
+"Bug Tracker" = "https://github.com/xh-dev-py/xhUtils/issues"
