@@ -1,1 +1,1 @@
-from .FileChanges import FileProgress, DeltaRead, DeltaType, DateFormattingRenameHandler, RenameHandler, ChangeHandler
+from .FileChanges import FileProgressUtils, FileProgress, DeltaRead, DeltaType, DateFormattingRenameHandler, RenameHandler, ChangeHandler
