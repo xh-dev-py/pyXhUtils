@@ -9,25 +9,22 @@ import os
 import sys
 from dataclasses import dataclass
 from enum import Enum
-from typing import Callable
+from typing import Callable, Generator, Tuple
 import datetime as dt
 
 
 class RenameHandler:
-    def rename(self, file_name: str):
-        return f"{file_name}_{dt.date.today().strftime('%Y_%m_%d')}"
 
+    def __init__(self, date: dt.datetime = dt.date.today(), separator: str = "-", strFormat: str = "%Y%m%d"):
+        self.separator = separator
+        self.strFormat = strFormat
+        self.date = date
 
-class DateFormattingRenameHandler(RenameHandler):
-    def __init__(self,
-                 dateFormat: Callable = lambda format_str: dt.date.today().strftime(format_str),
-                 format_str: str = "%Y%m%d"):
-        RenameHandler.__init__(self)
-        self.dateFormat = dateFormat
-        self.format_str = format_str
+    def getFunction(self) -> Callable[[str], str]:
+        def rename(file_name: str) -> str:
+            return f"{file_name}{self.separator}{self.date.strftime(self.strFormat)}"
 
-    def rename(self, file_name: str) -> str:
-        return f"{file_name}_{self.dateFormat(self.format_str)}"
+        return rename
 
 
 class DeltaType(Enum):
@@ -110,36 +107,71 @@ class FileProgressUtils:
     def setFileProgress(self, filename, offset):
         self.save_progress(self.getFileProgress(os.path.abspath(filename))[0].setOffset(offset))
 
-    def checkOnce(self, filename) -> DeltaRead:
-        return self.checkOnceAndDo(filename)
+    def checkOnce(self, filename) -> Generator[DeltaRead, None, None]:
+        for item in self.checkOnceAndDo(filename):
+            yield item
 
-    def checkOnceAndDo(self, filename, renameHandler: RenameHandler = None) -> DeltaRead:
+    def checkOnceAndDo(self, filename, renameHandler: Callable[[str], str] = None) -> Generator[DeltaRead, bool, None]:
         real_file = os.path.abspath(filename)
         (file_progress, createdNew) = self.getFileProgress(real_file)
         file_size = os.stat(filename).st_size
         if file_size < file_progress.offset:
             if renameHandler is None:
-                return DeltaRead(DeltaType.RENAMED, None)
+                _ = yield DeltaRead(DeltaType.RENAMED, None)
             else:
-                (rename_dr, _) = FileProgressUtils.read_all(renameHandler(file_progress.filename), file_progress.offset)
+                gen = FileProgressUtils.read_all(renameHandler(file_progress.filename), file_progress.offset)
+                while True:
+                    try:
+                        (rename_dr, _) = next(gen)
+                        if rename_dr.deltaType == DeltaType.DATA:
+                            yield rename_dr
+                    except StopIteration:
+                        pass
                 file_progress.setOffset(0)
                 self.save_progress(file_progress)
-                return rename_dr
         else:
-            (read_dr, new_offset) = self.read_all(file_progress.filename, file_progress.offset)
-            file_progress.setOffset(new_offset)
-            self.save_progress(file_progress)
-            return read_dr
+            gen = FileProgressUtils.read_all(file_progress.filename, file_progress.offset)
+            while True:
+                try:
+                    item = next(gen)
+                    (read_dr, new_offset) = item
+                    yield read_dr
+
+                    file_progress.setOffset(new_offset)
+                    self.save_progress(file_progress)
+                except StopIteration:
+                    pass
 
     @staticmethod
-    def read_all(filename: str, offset: int) -> (DeltaRead, int):
+    def read_all(filename: str, offset: int) -> Generator[Tuple[DeltaRead, int], bool, None]:
         real_file = os.path.abspath(filename)
+        # max = 1024*5
+        max = 10
+        cur = 0
+        lines = ""
+
         with open(real_file, "r") as f:
             f.seek(offset)
-            data = f.read()
-            delta = DeltaRead(DeltaType.DATA, data)
-            new_offset = f.tell()
-            return delta, new_offset
+            # data = f.read()
+            while True:
+                data = f.readline()
+                if len(data) == 0:
+                    break
+                if cur + len(data) >= max:
+                    lines += data
+                    yield DeltaRead(DeltaType.DATA, lines), f.tell()
+                    lines = ""
+                    cur = 0
+                else:
+                    cur += len(data)
+                    lines += data
+
+            if len(lines) > 0:
+                yield DeltaRead(DeltaType.DATA, lines), f.tell()
+
+            # delta = DeltaRead(DeltaType.DATA, data)
+            # new_offset = f.tell()
+            # return delta, new_offset
 
 
 if __name__ == "__main__":
@@ -156,10 +188,13 @@ if __name__ == "__main__":
     print(f"Dir: {dirName} ")
 
     fpu = FileProgressUtils()
-
-    dr = fpu.checkOnceAndDo(fileName, DateFormattingRenameHandler().rename)
-
-    if dr.deltaType == DeltaType.RENAMED:
-        pass
-    else:
-        ChangeHandler.print_changes(dr)
+    gen = fpu.checkOnceAndDo(fileName, RenameHandler(date=dt.date(2023, 1, 8), separator="_").getFunction())
+    while True:
+        try:
+            dr = next(gen)
+            if dr.deltaType == DeltaType.RENAMED:
+                pass
+            else:
+                ChangeHandler.print_changes(dr)
+        except StopIteration:
+            pass
