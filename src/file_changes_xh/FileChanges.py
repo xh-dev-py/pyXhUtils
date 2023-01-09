@@ -4,13 +4,13 @@ Created on Wed Dec 21 08:34:20 2022
 
 @author: adamh
 """
+import datetime as dt
 import json
 import os
 import sys
 from dataclasses import dataclass
 from enum import Enum
 from typing import Callable, Generator, Tuple
-import datetime as dt
 
 
 class RenameHandler:
