@@ -111,7 +111,7 @@ class FileProgressUtils:
         for item in self.checkOnceAndDo(filename):
             yield item
 
-    def checkOnceAndDo(self, filename, renameHandler: Callable[[str], str] = None) -> Generator[DeltaRead, bool, None]:
+    def checkOnceAndDo(self, filename, renameHandler: Callable[[str], str] = None) -> Generator[DeltaRead, None, None]:
         real_file = os.path.abspath(filename)
         (file_progress, createdNew) = self.getFileProgress(real_file)
         file_size = os.stat(filename).st_size
@@ -143,10 +143,8 @@ class FileProgressUtils:
                     pass
 
     @staticmethod
-    def read_all(filename: str, offset: int) -> Generator[Tuple[DeltaRead, int], bool, None]:
+    def read_all(filename: str, offset: int, min_read=1024 * 5) -> Generator[Tuple[DeltaRead, int], None, None]:
         real_file = os.path.abspath(filename)
-        # max = 1024*5
-        max = 10
         cur = 0
         lines = ""
 
@@ -157,7 +155,7 @@ class FileProgressUtils:
                 data = f.readline()
                 if len(data) == 0:
                     break
-                if cur + len(data) >= max:
+                if cur + len(data) >= min_read:
                     lines += data
                     yield DeltaRead(DeltaType.DATA, lines), f.tell()
                     lines = ""
@@ -168,10 +166,6 @@ class FileProgressUtils:
 
             if len(lines) > 0:
                 yield DeltaRead(DeltaType.DATA, lines), f.tell()
-
-            # delta = DeltaRead(DeltaType.DATA, data)
-            # new_offset = f.tell()
-            # return delta, new_offset
 
 
 if __name__ == "__main__":
