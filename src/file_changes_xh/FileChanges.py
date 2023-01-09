@@ -126,21 +126,18 @@ class FileProgressUtils:
                         if rename_dr.deltaType == DeltaType.DATA:
                             yield rename_dr
                     except StopIteration:
-                        pass
+                        break
                 file_progress.setOffset(0)
                 self.save_progress(file_progress)
         else:
             gen = FileProgressUtils.read_all(file_progress.filename, file_progress.offset)
             while True:
-                try:
-                    item = next(gen)
-                    (read_dr, new_offset) = item
-                    yield read_dr
+                item = next(gen)
+                (read_dr, new_offset) = item
+                yield read_dr
 
-                    file_progress.setOffset(new_offset)
-                    self.save_progress(file_progress)
-                except StopIteration:
-                    pass
+                file_progress.setOffset(new_offset)
+                self.save_progress(file_progress)
 
     @staticmethod
     def read_all(filename: str, offset: int, min_read=1024 * 5) -> Generator[Tuple[DeltaRead, int], None, None]:
