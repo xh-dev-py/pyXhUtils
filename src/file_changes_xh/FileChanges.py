@@ -111,7 +111,7 @@ class FileProgressUtils:
         for item in self.checkOnceAndDo(filename):
             yield item
 
-    def checkOnceAndDo(self, filename, renameHandler: Callable[[str], str] = None) -> Generator[DeltaRead, None, None]:
+    def checkOnceAndDo(self, filename, renameHandler: Callable[[str], str] = None, min_read=1024*800) -> Generator[DeltaRead, None, None]:
         real_file = os.path.abspath(filename)
         (file_progress, createdNew) = self.getFileProgress(real_file)
         file_size = os.stat(filename).st_size
@@ -119,7 +119,7 @@ class FileProgressUtils:
             if renameHandler is None:
                 _ = yield DeltaRead(DeltaType.RENAMED, None)
             else:
-                gen = FileProgressUtils.read_all(renameHandler(file_progress.filename), file_progress.offset)
+                gen = FileProgressUtils.read_all(renameHandler(file_progress.filename), file_progress.offset, min_read=min_read)
                 while True:
                     try:
                         (rename_dr, _) = next(gen)
@@ -130,14 +130,17 @@ class FileProgressUtils:
                 file_progress.setOffset(0)
                 self.save_progress(file_progress)
         else:
-            gen = FileProgressUtils.read_all(file_progress.filename, file_progress.offset)
+            gen = FileProgressUtils.read_all(file_progress.filename, file_progress.offset, min_read=min_read)
             while True:
-                item = next(gen)
-                (read_dr, new_offset) = item
-                yield read_dr
+                try:
+                    item = next(gen)
+                    (read_dr, new_offset) = item
+                    yield read_dr
 
-                file_progress.setOffset(new_offset)
-                self.save_progress(file_progress)
+                    file_progress.setOffset(new_offset)
+                    self.save_progress(file_progress)
+                except StopIteration:
+                    break
 
     @staticmethod
     def read_all(filename: str, offset: int, min_read=1024 * 5) -> Generator[Tuple[DeltaRead, int], None, None]:
