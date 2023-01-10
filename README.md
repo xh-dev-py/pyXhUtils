@@ -62,3 +62,13 @@ ipHostFinder.find("127.0.0.1")
 import string_utils_xh as su
 su.repeat_str()
 ```
+
+## apache_log_xh
+```python
+from apache_log_xh import LogLine
+
+
+with open("{==== apache log =====}", "r") as f:
+     loglinesg = [ LogLine.read_log_lines(line) for line in f.readlines() ]
+    
+```
