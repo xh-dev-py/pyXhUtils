@@ -16,7 +16,7 @@ class ProgressPinger:
         if self.count % self.print_every_n_count == 0:
             ProgressPinger.print_log(f"Processed count: {self.print_every_n_count}")
 
-        if not printed and self.lastUpdate + dt.timedelta(seconds=15) < dt.datetime.now():
+        if not printed and self.lastUpdate + dt.timedelta(seconds=self.print_every_n_second) < dt.datetime.now():
             ProgressPinger.print_log(f"Processed count: {self.print_every_n_count}")
 
         self.lastUpdate = dt.datetime.now()
