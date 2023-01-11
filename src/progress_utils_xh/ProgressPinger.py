@@ -15,6 +15,7 @@ class ProgressPinger:
         printed = False
         if self.count % self.print_every_n_count == 0:
             ProgressPinger.print_log(f"Processed count: {self.print_every_n_count}")
+            printed = True
 
         if not printed and self.lastUpdate + dt.timedelta(seconds=self.print_every_n_second) < dt.datetime.now():
             ProgressPinger.print_log(f"Processed count: {self.print_every_n_count}")
