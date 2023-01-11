@@ -72,3 +72,19 @@ with open("{==== apache log =====}", "r") as f:
      loglinesg = [ LogLine.read_log_lines(line) for line in f.readlines() ]
     
 ```
+
+## progress_printer
+Progress Printer responsible to produce less screen print to ensure the program running as expected.
+Mainly used for dev env.
+```python
+from progress_utils_xh import ProgressPinger
+
+pinger = ProgressPinger(
+    print_every_n_count = 100,  # print a progress log every hundred times call ping method
+    print_every_n_second = 15   # print a progress log every 15 second if not meeting 100 record processing
+)
+
+while True:
+    pinger.ping()
+    pass
+```
