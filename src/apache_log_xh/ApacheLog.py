@@ -21,7 +21,6 @@ class LogLineIndex(Enum):
 
 
 @dataclass(frozen=True)
-@dataclass
 class UrlMeta:
     method: str
     path: str
@@ -87,8 +86,8 @@ class LogLine:
     agent: str
     raw: str
 
-    def dict(self):
-        return {field.name: str(getattr(self, field.name)) for field in fields(self)}
+    # def dict(self):
+    #     return {field.name: str(getattr(self, field.name)) for field in fields(self)}
 
     @staticmethod
     def read_log_lines(line: str):
@@ -115,15 +114,15 @@ class LogLine:
             for c in line:
                 if varIndex in [I_IP, I_IID, I_UID, I_STATUS_E, I_LENGTH] and c == " ":
                     if varIndex in [I_STATUS_E, I_LENGTH]:
-                        result.append(int(buf))
+                        result.append(buf)
                     else:
-                        result.append(str(buf))
+                        result.append(buf)
                     buf = ""
                     varIndex += 1
                 elif varIndex in [I_DATE] and c == "[":
                     buf = ""
                 elif varIndex in [I_DATE] and c == "]":
-                    result.append(dt.datetime.strptime(buf, "%d/%b/%Y:%H:%M:%S %z"))
+                    result.append(buf)
                     buf = ""
                     varIndex += 1
                 elif varIndex in [I_URL_S, I_REFERER_S, I_AGENT_S] and c == "\"":
@@ -134,11 +133,11 @@ class LogLine:
                         buf += c
                         continue
 
-                    result.append(str(buf))
+                    result.append(buf)
                     buf = ""
                     varIndex += 1
                 elif varIndex in [I_REFERER_E, I_AGENT_E] and c == "\"":
-                    result.append(str(buf))
+                    result.append(buf)
                     buf = ""
                     varIndex += 1
                 elif varIndex in [I_STATUS_S] and c == " ":
@@ -151,23 +150,34 @@ class LogLine:
             raise
 
     @staticmethod
-    def from_line(result: [any]) -> 'LogLine':
+    def from_line(result) -> 'LogLine':
+        # dt.datetime.strptime(, "%d/%b/%Y:%H:%M:%S %z")
         ipaddress = result[LogLineIndex.IpAddress.value],
         identd = result[LogLineIndex.Identd.value],
-        userId = result[LogLineIndex.UserId.value],
-        receivedAt = result[LogLineIndex.ReceivedAt.value],
+        user_id = result[LogLineIndex.UserId.value],
+        received_at = result[LogLineIndex.ReceivedAt.value],
         url = result[LogLineIndex.Url.value],
-        statusCode = result[LogLineIndex.StatusCode.value],
-        returnSize = result[LogLineIndex.ReturnSize.value],
+        status_code = result[LogLineIndex.StatusCode.value],
+        return_size = result[LogLineIndex.ReturnSize.value],
         referer = result[LogLineIndex.Referer.value],
         agent = result[LogLineIndex.Agent.value],
         raw = result[LogLineIndex.Raw.value]
         return LogLine(
-            ipaddress, identd, userId, receivedAt, url, statusCode, returnSize, referer, agent, raw
+            ipaddress if type(ipaddress) is not tuple else ipaddress[0],
+            identd if type(identd) is not tuple else identd[0],
+            user_id if type(user_id) is not tuple else user_id[0],
+            dt.datetime.strptime(received_at, "%d/%b/%Y:%H:%M:%S %z")
+            if type(received_at) is not tuple
+            else dt.datetime.strptime(received_at[0], "%d/%b/%Y:%H:%M:%S %z"),
+            url if type(url) is not tuple else url[0],
+            int(status_code) if type(status_code) is not tuple else int(status_code[0]),
+            int(return_size) if type(return_size) is not tuple else int(return_size[0]),
+            referer if type(referer) is not tuple else referer[0],
+            agent if type(agent) is not tuple else agent[0],
+            raw
         )
 
     @staticmethod
     def read_log_lines_and_parse(line) -> 'LogLine':
         return LogLine.from_line(LogLine.read_log_lines(line))
-
 

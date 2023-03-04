@@ -1,5 +1,12 @@
 A collection of self dev library.
 
+## Build
+```shell
+rm -fr dist
+python -m build
+python -m twine upload dist/*
+```
+
 ## file_changes_xh
 
 In case we have log file from apache web server, the log file name is "access.log", the log will be renamed to "access.log-{YYYYmmdd}" daily. \
