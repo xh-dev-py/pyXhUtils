@@ -5,7 +5,7 @@ import urllib
 import urllib.parse
 from dataclasses import dataclass, fields
 from enum import Enum
-from ..string_utils_xh.StringUtils import findStartEnd
+from string_utils_xh import findStartEnd
 
 
 class LogLineIndex(Enum):
