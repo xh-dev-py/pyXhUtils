@@ -5,6 +5,7 @@ import urllib
 import urllib.parse
 from dataclasses import dataclass, fields
 from enum import Enum
+from ..string_utils_xh.StringUtils import findStartEnd
 
 
 class LogLineIndex(Enum):
@@ -85,6 +86,12 @@ class LogLine:
     referer: str
     agent: str
     raw: str
+
+    def unquotedRaw(self) -> str:
+        msg = self.raw
+        iStart, iEnd, url = findStartEnd(msg, "\"", "\"", "\\", inclusive=False, startSearchFrom=0)
+        msg = msg[:iStart] + urllib.parse.unquote(url) + msg[iEnd:]
+        return msg
 
     # def dict(self):
     #     return {field.name: str(getattr(self, field.name)) for field in fields(self)}
@@ -180,4 +187,3 @@ class LogLine:
     @staticmethod
     def read_log_lines_and_parse(line) -> 'LogLine':
         return LogLine.from_line(LogLine.read_log_lines(line))
-
