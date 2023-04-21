@@ -3,9 +3,10 @@ import re
 import typing
 import urllib
 import urllib.parse
-from dataclasses import dataclass, fields
+from dataclasses import dataclass
 from enum import Enum
-from string_utils_xh import findStartEnd
+
+from xh_utils_string import findStartEnd
 
 
 class LogLineIndex(Enum):
