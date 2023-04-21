@@ -4,13 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyXhUtils"
-version = "0.0.19-dev+000"
+version = "1.0.0"
 description = "A collection of self dev py library"
 readme = "README.md"
 requires-python = ">=3.6"
 classifiers = [ "Programming Language :: Python :: 3", "License :: OSI Approved :: MIT License", "Operating System :: OS Independent",]
-dependencies = [
-]
+dependencies = []
 [[project.authors]]
 name = "xethhung"
 email = "pypi@xethh.dev"
