@@ -13,8 +13,9 @@ class ScriptWriter:
             st = os.stat(file_name)
             os.chmod(file_name, st.st_mode | stat.S_IEXEC)
 
-    def write_script_text(self, file_name: str, text: str, executable: bool = False):
-        self.write_script(file_name, lambda f: f.write(text), executable=executable)
+    @staticmethod
+    def write_script_text(file_name: str, text: str, executable: bool = False):
+        ScriptWriter.write_script(file_name, lambda f: f.write(text), executable=executable)
 
 
 if __name__ == '__main__':
