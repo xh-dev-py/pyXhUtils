@@ -13,6 +13,7 @@ from xh_functional import Scope
 
 Scope(1)\
     .apply(lambda x: x + 1)\
+    .verify(lambda x: x == 2, msg=lambda x: f"Exception: {x}")\
     .map(lambda x: f"Some number: {x}")\
     .get()
 
@@ -131,7 +132,7 @@ ipResults = [
 
 Find host by ip if applicable
 ```python
-form xh_utils_ip import defaultIpHostFinder as ipHostFinder
+from xh_utils_ip import defaultIpHostFinder as ipHostFinder
 ipHostFinder.find("127.0.0.1")
 ```
 

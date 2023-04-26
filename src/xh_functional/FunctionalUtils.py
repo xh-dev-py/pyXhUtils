@@ -14,5 +14,13 @@ class Scope(Generic[T]):
     def map(self, f: Callable[[T], R]) -> 'Scope[R]':
         return Scope(f(self._obj))
 
+    def verify(self, predicate: Callable[[T], bool],
+               msg: Callable[[T], str] = lambda x: f"verification failure: {x}") -> 'Scope[T]':
+        result = predicate(self._obj)
+        if result:
+            return self
+        else:
+            raise Exception(msg(self._obj))
+
     def get(self) -> 'T':
         return self._obj
