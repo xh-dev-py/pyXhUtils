@@ -7,6 +7,19 @@ python -m build
 python -m twine upload dist/*
 ```
 
+## Functional
+```python
+from xh_functional import Scope
+
+Scope(1)\
+    .apply(lambda x: x + 1)\
+    .map(lambda x: f"Some number: {x}")\
+    .get()
+
+# output
+# Some number: 2
+```
+
 ## File Utils
 ```python
 from xh_file_utils import FileUtils
@@ -16,6 +29,11 @@ FileUtils.check_file("file path", check_is_file=True, check_is_dir=False)
 # The read_file_lines will return a generator, which is more memory efficient
 for line in FileUtils.read_file_lines("file path"):
     print(line)
+
+
+# file content
+text = FileUtils.read_file("file path")
+
 ```
 
 ## Ini Modifier
