@@ -24,3 +24,4 @@ class FileUtils:
             raise Exception(f"{label}[{path}] is not file")
         if check_is_directory and not os.path.isdir(path):
             raise Exception(f"{label}[{path}] is not directory")
+        return True
