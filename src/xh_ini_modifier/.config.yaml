@@ -1,5 +1,6 @@
 - type: ca
   name: ca
+  root_path: /home/test
   openssl_cnf:
     - { type: value, section: req, key: prompt, value: "no", state: present }
     - { type: value, section: req_distinguished_name, key: localityName_default, state: remove }

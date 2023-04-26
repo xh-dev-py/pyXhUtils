@@ -6,6 +6,18 @@ rm -fr dist
 python -m build
 python -m twine upload dist/*
 ```
+
+## File Utils
+```python
+from xh_file_utils import FileUtils
+
+FileUtils.check_file("file path", check_is_file=True, check_is_dir=False)
+
+# The read_file_lines will return a generator, which is more memory efficient
+for line in FileUtils.read_file_lines("file path"):
+    print(line)
+```
+
 ## Ini Modifier
 Modify openssl.cnf with yaml configuration.
 

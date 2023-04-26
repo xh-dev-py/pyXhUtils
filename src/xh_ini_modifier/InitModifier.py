@@ -18,9 +18,11 @@ class OpenSSLConfigMetaRow:
 @dataclass
 class OpenSSLConfigMeta:
     type: str
+    root_path: str
     name: str
     done: bool
     openssl_cnf: List[OpenSSLConfigMetaRow]
+    data: dict
 
 
 class OpenSSLConfigLoader:
@@ -29,12 +31,14 @@ class OpenSSLConfigLoader:
         with open(file) as f:
             data = yaml.safe_load(f)
             for meta in data:
-                yield OpenSSLConfigMeta(meta["type"], meta["name"], meta["done"] if "done" in meta else False,
+                yield OpenSSLConfigMeta(meta["type"], meta["root_path"], meta["name"], meta["done"] if "done" in meta else False,
                                         [
                                             OpenSSLConfigMetaRow(row['type'], row["state"], row['section'], row['key'],
                                                                  row['value'] if row['state'] == "present" else "")
                                             for row in meta["openssl_cnf"]
-                                        ])
+                                        ],
+                                        meta["openssl_cnf"]
+                                        )
 
 
 class IniFile:
