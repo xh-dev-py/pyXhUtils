@@ -1,7 +1,52 @@
-from typing import TypeVar, Generic, Callable
+from typing import TypeVar, Generic, Callable, List, Generator
 
 T = TypeVar('T')
 R = TypeVar('R')
+
+I = TypeVar('I')
+O = TypeVar('O')
+
+
+class Stream(Generic[I, O]):
+    def __init__(self,
+                 data: List[I],
+                 gen: Callable[[List[I]], Generator[O, None, None]] = lambda xs: (x for x in xs)
+                 ):
+        self.data = data
+        self.gen = gen
+
+    def map(self,
+            converter: Callable[[I], O],
+            filter: Callable[[I], bool] = lambda x: True
+            ) -> 'Stream[T, U]':
+        new_gen: Callable[[List[I]], Generator[O, None, None]] = lambda ls: (converter(item) for item in self.gen(ls)
+                                                                             if filter is not None and filter(item))
+        return Stream(self.data, gen=new_gen)
+
+    def filter(self, filter: Callable[[I], bool]):
+        new_gen: Callable[[List[I]], Generator[O, None, None]] = lambda ls: (item for item in self.gen(ls) if
+                                                                             filter is not None and filter(item))
+        return Stream(self.data, gen=new_gen)
+
+    def get(self) -> Generator[O, None, None]:
+        return self.gen(self.data)
+
+    def list(self) -> List[O]:
+        return list(self.gen(self.data))
+
+
+if __name__ == '__main__':
+    data = Stream([1, 2, 3, 4]) \
+        .map(lambda x: x * x) \
+        .filter(lambda x: x > 3) \
+        .list()
+    print(data)
+
+    # def get(self, list_of_data: List[I]) -> List[O]:
+    #     return ()
+    #
+    # def gen(self, list_of_data: List[I]) -> Generator[O, None, None]:
+    #     return (item for item in self.gen(list_of_data))
 
 
 class Scope(Generic[T]):

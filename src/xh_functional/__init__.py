@@ -1,1 +1,1 @@
-from xh_functional.FunctionalUtils import Scope
+from xh_functional.FunctionalUtils import Scope, Stream

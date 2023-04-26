@@ -8,17 +8,30 @@ python -m twine upload dist/*
 ```
 
 ## Functional
+
 ```python
-from xh_functional import Scope
+from xh_functional import Scope, Stream
 
 Scope(1)\
-    .apply(lambda x: x + 1)\
-    .verify(lambda x: x == 2, msg=lambda x: f"Exception: {x}")\
-    .map(lambda x: f"Some number: {x}")\
-    .get()
+.apply(lambda x: x + 1)\
+.verify(lambda x: x == 2, msg=lambda x: f"Exception: {x}")\
+.map(lambda x: f"Some number: {x}")\
+.get()
 
 # output
 # Some number: 2
+
+Stream([1, 2, 3, 4])\
+.map(lambda x: x * x)\
+.filter(lambda x: x % 2 == 0)\
+.get()
+
+# output
+# Some number: [2, 4, 16]
+```
+
+    
+
 ```
 
 ## File Utils
