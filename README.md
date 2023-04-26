@@ -6,13 +6,44 @@ rm -fr dist
 python -m build
 python -m twine upload dist/*
 ```
+## Ini Modifier
+Modify openssl.cnf with yaml configuration.
+
+```yaml
+- type: ca
+  name: ca
+  openssl_cnf:
+    - { type: value, section: req, key: prompt, value: "no", state: present }
+    - { type: value, section: req_distinguished_name, key: localityName_default, state: remove }
+    - { type: value, section: req_distinguished_name, key: countryName, value: HK, state: present }
+    - { type: value, section: server_cert, key: alt_names, value: ca.kafka.examplecom, state: present }
+    - { type: alt_names, section: alt_names, key: dns, value: localhost, state: present }
+    - { type: alt_names, section: alt_names, key: dns, value: node-1.kafka.example.com, state: present }
+    - { type: alt_names, section: alt_names, key: ip, value: 127.0.0.1, state: present }
+    - { type: alt_names, section: alt_names, key: ip, value: 192.168.8.1, state: present }
+- type: ca
+  name: ca1
+  done: True
+  openssl_cnf: []
+
+```
+
+```python
+from xh_ini_modifier import IniFile, OpenSSLConfigLoader, OpenSSLConfigMeta, OpenSSLConfigMetaRow
+config = [
+    config
+    for config in OpenSSLConfigLoader.load(".config.yaml")
+    if not config.done and config.name == "ca"][0]
+print(IniFile.modify("openssl.cnf", config))
+```
+
 ## Script writer
 A simple script writer function to write script file with executable permission.
 
 ```python
-from xh_utils_script_writer import ScriptWriter
-script_writer.write_script("test.sh",lambda f: f.write("hello world"), executable=True)
-script_writer.write_script_text("test.sh","hello world", executable=True)
+from xh_utils_script_file_writer import ScriptWriter
+ScriptWriter.write_script("test.sh",lambda f: f.write("hello world"), executable=True)
+ScriptWriter.write_script_text("test.sh","hello world", executable=True)
 ```
 
 ## xh_utils_file_changes

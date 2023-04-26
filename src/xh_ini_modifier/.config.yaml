@@ -1,0 +1,26 @@
+- type: ca
+  name: ca
+  openssl_cnf:
+    - { type: value, section: req, key: prompt, value: "no", state: present }
+    - { type: value, section: req_distinguished_name, key: localityName_default, state: remove }
+    - { type: value, section: req_distinguished_name, key: countryName_default, state: remove }
+    - { type: value, section: req_distinguished_name, key: stateOrProvinceName_default, state: remove }
+    - { type: value, section: req_distinguished_name, key: 0.organizationName_default, state: remove }
+    - { type: value, section: req_distinguished_name, key: organizationalUnitName_default, state: remove }
+    - { type: value, section: req_distinguished_name, key: emailAddress_default, state: remove }
+    - { type: value, section: req_distinguished_name, key: countryName, value: HK, state: present }
+    - { type: value, section: req_distinguished_name, key: localityName, value: HK, state: present }
+    - { type: value, section: req_distinguished_name, key: stateOrProvinceName, value: HK, state: present }
+    - { type: value, section: req_distinguished_name, key: 0.organizationName, value: example-dot-com, state: present }
+    - { type: value, section: req_distinguished_name, key: organizationalUnitName, value: IT, state: present }
+    - { type: value, section: req_distinguished_name, key: emailAddress, value: admin@example.com, state: present }
+    - { type: value, section: req_distinguished_name, key: commonName, value: ca.example.com, state: present }
+    - { type: value, section: server_cert, key: alt_names, value: ca.kafka.examplecom, state: present }
+    - { type: alt_names, section: alt_names, key: dns, value: localhost, state: present }
+    - { type: alt_names, section: alt_names, key: dns, value: node-1.kafka.example.com, state: present }
+    - { type: alt_names, section: alt_names, key: ip, value: 127.0.0.1, state: present }
+    - { type: alt_names, section: alt_names, key: ip, value: 192.168.8.1, state: present }
+- type: ca
+  name: ca1
+  done: True
+  openssl_cnf: []
