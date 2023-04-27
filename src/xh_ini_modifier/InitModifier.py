@@ -41,7 +41,7 @@ class OpenSSLConfigLoader:
                                                                  row['value'] if row['state'] == "present" else "")
                                             for row in meta["openssl_cnf"]
                                         ],
-                                        meta["openssl_cnf"]
+                                        meta
                                         )
 
     @staticmethod
