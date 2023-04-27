@@ -79,6 +79,9 @@ config = [
     for config in OpenSSLConfigLoader.load(".config.yaml")
     if not config.done and config.name == "ca"][0]
 print(IniFile.modify("openssl.cnf", config))
+
+OpenSSLConfigLoader.load_as_list(".config.yaml") # return list of OpenSSLConfigMeta
+OpenSSLConfigLoader.load_as_stream(".config.yaml") # return stream of OpenSSLConfigMeta
 ```
 
 ## Script writer

@@ -5,6 +5,9 @@ from typing import Callable, Generator, List
 
 import yaml
 
+import xh_functional
+from xh_functional import Stream
+
 
 @dataclass
 class OpenSSLConfigMetaRow:
@@ -31,7 +34,8 @@ class OpenSSLConfigLoader:
         with open(file) as f:
             data = yaml.safe_load(f)
             for meta in data:
-                yield OpenSSLConfigMeta(meta["type"], meta["root_path"], meta["name"], meta["done"] if "done" in meta else False,
+                yield OpenSSLConfigMeta(meta["type"], meta["root_path"], meta["name"],
+                                        meta["done"] if "done" in meta else False,
                                         [
                                             OpenSSLConfigMetaRow(row['type'], row["state"], row['section'], row['key'],
                                                                  row['value'] if row['state'] == "present" else "")
@@ -39,6 +43,14 @@ class OpenSSLConfigLoader:
                                         ],
                                         meta["openssl_cnf"]
                                         )
+
+    @staticmethod
+    def load_as_list(file: str) -> List[OpenSSLConfigMeta]:
+        return list(OpenSSLConfigLoader.load(file))
+
+    @staticmethod
+    def load_as_stream(file: str) -> Stream[OpenSSLConfigMeta]:
+        return Stream(OpenSSLConfigLoader.load_as_list(file))
 
 
 class IniFile:
