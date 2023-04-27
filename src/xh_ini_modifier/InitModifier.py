@@ -77,7 +77,7 @@ class IniFile:
             parser.remove_option(section, key)
 
     @staticmethod
-    def modify(file_name: str, config: OpenSSLConfigMeta):
+    def modify(file_name: str, config: OpenSSLConfigMeta, persist: bool = True) -> str:
         parser = configparser.ConfigParser()
         parser.optionxform = str
         parser.read(file_name)
@@ -102,6 +102,10 @@ class IniFile:
                 IniFile.rm_value(parser, row.section, row.key)
 
         IniFile.batch_rename_section(parser, lambda section: f" {section} ")
+
+        if persist:
+            with open(file_name, "w") as f:
+                parser.write(f)
 
         with io.StringIO() as f:
             parser.write(f)
