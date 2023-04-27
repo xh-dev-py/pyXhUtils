@@ -49,7 +49,7 @@ class OpenSSLConfigLoader:
         return list(OpenSSLConfigLoader.load(file))
 
     @staticmethod
-    def load_as_stream(file: str) -> Stream[OpenSSLConfigMeta]:
+    def load_as_stream(file: str) -> Stream[OpenSSLConfigMeta, OpenSSLConfigMeta]:
         return Stream(OpenSSLConfigLoader.load_as_list(file))
 
 
