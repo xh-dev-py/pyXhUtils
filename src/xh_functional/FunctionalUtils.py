@@ -66,7 +66,8 @@ class Scope(Generic[T]):
         if self._obj is None:
             return self
         if predicate(self._obj):
-            return Scope(f(self._obj))
+            f(self._obj)
+            return Scope(self._obj)
         else:
             return self
 
