@@ -56,6 +56,14 @@ class Scope(Generic[T]):
     def apply(self, f: Callable[[T], T]) -> 'Scope[T]':
         return Scope(f(self._obj))
 
+    def applyIf(self, predicate: Callable[[T], bool], f: Callable[[T], T]) -> 'Scope[T]':
+        if self._obj is None:
+            return self
+        if predicate(self._obj):
+            return Scope(f(self._obj))
+        else:
+            return self
+
     def map(self, f: Callable[[T], R]) -> 'Scope[R]':
         return Scope(f(self._obj))
 
