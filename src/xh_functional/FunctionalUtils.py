@@ -53,6 +53,12 @@ class Scope(Generic[T]):
     def __init__(self, obj: T):
         self._obj = obj
 
+    def ensureExists(self) -> 'Scope[T]':
+        if self._obj is None:
+            raise Exception("object is None")
+        else:
+            return self
+
     def apply(self, f: Callable[[T], T]) -> 'Scope[T]':
         return Scope(f(self._obj))
 
