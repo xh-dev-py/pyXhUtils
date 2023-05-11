@@ -34,15 +34,18 @@ class OpenSSLConfigLoader:
         with open(file) as f:
             data = yaml.safe_load(f)
             for meta in data:
-                yield OpenSSLConfigMeta(meta["type"], meta["root_path"], meta["name"],
-                                        meta["done"] if "done" in meta else False,
-                                        [
-                                            OpenSSLConfigMetaRow(row['type'], row["state"], row['section'], row['key'],
-                                                                 row['value'] if row['state'] == "present" else "")
-                                            for row in meta["openssl_cnf"]
-                                        ],
-                                        meta
-                                        )
+                try:
+                    yield OpenSSLConfigMeta(meta["type"], meta["root_path"], meta["name"],
+                                            meta["done"] if "done" in meta else False,
+                                            [
+                                                OpenSSLConfigMetaRow(row['type'], row["state"], row['section'], row['key'],
+                                                                     row['value'] if row['state'] == "present" else "")
+                                                for row in meta["openssl_cnf"]
+                                            ],
+                                            meta
+                                            )
+                except Exception as e:
+                    raise Exception(f"Failed to load meta: {meta}") from e
 
     @staticmethod
     def load_as_list(file: str) -> List[OpenSSLConfigMeta]:
