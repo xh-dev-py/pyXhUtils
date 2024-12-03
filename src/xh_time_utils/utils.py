@@ -3,8 +3,9 @@ import datetime as dt
 
 time_format= '%Y-%m-%dT%H:%M:%S%z'
 hktz = zoneinfo.ZoneInfo("Asia/Hong_Kong")
-def to_time_str(d):
-    return d.astimezone(hktz).strftime(time_format)
+jptz = zoneinfo.ZoneInfo("Asia/Tokyo")
+def to_time_str(d, tz: hktz, format=time_format):
+    return d.astimezone(tz).strftime(format)
 
-def from_str_to_time(date_str)->dt.datetime|None:
-    return dt.datetime.strptime(date_str.replace(" +","+"), time_format).astimezone(hktz) if date_str is not None else None
+def from_str_to_time(date_str, tz=hktz, format=time_format)->dt.datetime|None:
+    return dt.datetime.strptime(date_str.replace(" +","+"), format).astimezone(tz) if date_str is not None else None
