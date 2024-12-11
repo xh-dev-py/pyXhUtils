@@ -9,7 +9,7 @@ class DurableCache():
         os.makedirs(self.cache_name, exist_ok=True)
 
     def get_cache(self, name: str, day_to_keep):
-        return DurableCacheInDay(name, day_to_keep)
+        return DurableCacheInDay(self.cache_name, name, day_to_keep)
 
 
 
