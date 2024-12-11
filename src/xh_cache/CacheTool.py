@@ -8,7 +8,7 @@ class DurableCache():
         self.cache_name = f".cache_{cache_name}"
         os.makedirs(self.cache_name, exist_ok=True)
 
-    def get_cache(self, name: str, day_to_keep):
+    def get_cache(self, name: str, day_to_keep=14):
         return DurableCacheInDay(self.cache_name, name, day_to_keep)
 
 
@@ -29,7 +29,7 @@ class DurableCacheInDay():
         cached_file=os.path.join(self.get_path(),key_gen)
         import datetime as dt
         if os.path.exists(cached_file) and (dt.datetime.now() - dt.datetime.fromtimestamp(os.path.getctime(cached_file))).days < self.day_to_key:
-            return json.loads(open(cached_file).read())["results"]
+            return open(cached_file).read()
         else:
             data = get_data()
             open(cached_file, "w").write(data)
