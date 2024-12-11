@@ -30,6 +30,15 @@ Stream([1, 2, 3, 4])\
 # Some number: [2, 4, 16]
 ```
 
+## Cache
+
+```python
+from xh_cache import CacheForDays
+
+app_cache = CacheForDays.get_cache("app_name")
+app_cache.cache("key", "data to be stored")
+
+```
     
 
 ```
