@@ -19,7 +19,7 @@ class Logger():
         self.output = output
 
     def write(self, text: str):
-        if self.output is None:
+        if self.output is not None:
             self.output.write(text)
 
     @staticmethod
