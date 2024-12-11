@@ -1,11 +1,7 @@
 import hashlib
-import json
 import os
 import sys
 import typing
-from typing import TextIO
-
-from docutils.io import FileOutput
 
 
 class DurableCache():
@@ -14,8 +10,8 @@ class DurableCache():
         self.with_log = with_log
         os.makedirs(self.cache_name, exist_ok=True)
 
-    def get_cache(self, name: str, day_to_keep=14, with_log: bool = False):
-        return DurableCacheInDay(self.cache_name, name, day_to_keep, with_log)
+    def get_cache(self, name: str, day_to_keep=14):
+        return DurableCacheInDay(self.cache_name, name, day_to_keep, self.with_log)
 
 
 class Logger():
