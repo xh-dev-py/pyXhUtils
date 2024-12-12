@@ -21,6 +21,8 @@ class Logger():
     def write(self, text: str):
         if self.output is not None:
             self.output.write(text)
+            self.output.write("\n")
+            self.output.flush()
 
     @staticmethod
     def get_stderr_logger():
@@ -61,3 +63,7 @@ class DurableCacheInDay():
             data = get_data()
             open(cached_file, "w").write(data)
             return data
+
+if __name__ == '__main__':
+    logger=Logger.get_stderr_logger()
+    logger.write("hihihi")
